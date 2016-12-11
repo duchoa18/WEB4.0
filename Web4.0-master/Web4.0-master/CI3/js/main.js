@@ -47,14 +47,16 @@ var create = function(){
 
     Nakama.game.physics.startSystem(Phaser.Physics.ARCADE);
     Nakama.keyboard = Nakama.game.input.keyboard;
+
     Nakama.background = Nakama.game.add.tileSprite(0, 0, 640, 960, 'background');
+
+    Nakama.bulletControllers =[];
     Nakama.shipControllers = [];
+    Nakama.enemies = [];
 
     Nakama.playerGroup = Nakama.game.add.physicsGroup();
     Nakama.bulletGroup = Nakama.game.add.physicsGroup();
     Nakama.enemyGroup = Nakama.game.add.physicsGroup();
-
-    Nakama.enemies = [];
 
     var player1Constructor = getPlayerShipChoice("Player1");
     var player2Constructor = getPlayerShipChoice("Player2");
@@ -95,6 +97,12 @@ var update = function(){
     for (var i=0 ; i< Nakama.shipControllers.length ;i++){
       Nakama.shipControllers[i].update();
     }
+
+    for (var i=0 ; i< Nakama.bulletControllers.length ;i++){
+      if (Nakama.bulletControllers[i].update){
+      Nakama.bulletControllers[i].update();
+      }
+    }
     Nakama.game.physics.arcade.overlap(Nakama.bulletGroup,Nakama.enemyGroup,onBulletHitActor);
 }
 
@@ -112,7 +120,7 @@ var render = function(){
 
 function onBulletHitActor(bulletSprite,actorSprite){
   actorSprite.damage(bulletSprite.power);
-  bulletSprite.kill();
+  bulletSprite.onHitTarget();
 }
 
 function getPlayerShipChoice(playerName){

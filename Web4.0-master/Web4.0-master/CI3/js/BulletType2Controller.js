@@ -1,21 +1,32 @@
 class BulletType2Controller extends BulletController {
-  constructor (position , spriteName , direction , configs){
-    super(position ,spriteName ,direction ,configs);
-    this.sprite.update = this.update.bind(this);
+  constructor (position ,direction,configs){
+    super(position , "BulletType2.png" ,direction ,configs);
   }
 
-  update() {
-    if(this.target) {
-      this.sprite.body.velocity.setTo(this.sprite.body.velocity.x + this.target.x - this.sprite.x , this.sprite.body.velocity.y + this.target.y - this.sprite.y).setMagnitude(Nakama.configs.BULLET_SPEED);
-    } else {
-    for(var i = 0; i < Nakama.enemyGroup.children.length; i++) {
-      var enemy = Nakama.enemyGroup.children[i];
-      if(enemy._exists) {
-        this.target = enemy;
-        return;
+  update(){
+    var minDistance = 99999;
+    for (var i=0; i<Nakama.enemies.length;i++){
+      if(!Nakama.enemies[i].sprite.alive) continue;
+
+      var distanceToEnemy = Phaser.Point.subtract(Nakama.enemies[i].sprite.position,this.sprite.position).getMagnitude();
+      if (distanceToEnemy < minDistance){
+        minDistance = distanceToEnemy ;
+        this.target = Nakama.enemies[i] ;
       }
-    }
-  }
-}
+    };
 
+  if (!this.target || !this.target.sprite.alive)
+    return ;
+
+  this.sprite.body.velocity = Phaser.Point.subtract(
+    this.target.sprite.position,
+    this.sprite.position
+  ).setMagnitude(Nakama.configs.BULLET_SPEED);
+
+  this.sprite.angle = Math.atan2(
+    this.sprite.body.velocity.x,
+    -this.sprite.body.velocity.y
+  )*(180/Math.PI);
+
+}
 }

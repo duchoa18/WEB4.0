@@ -9,7 +9,6 @@ class ShipType3Controller extends ShipController {
   }
 
   fire(){
-    var bullet = new BulletController(this.sprite.position,"BulletType3.png",new Phaser.Point(0,-10),{power : 50});
-    bullet.sprite.anchor = new Phaser.Point(0.5,1);
+    new LaserController(this.sprite.position,this.sprite,{power: 2, lifeTime:0.1});
   }
 }

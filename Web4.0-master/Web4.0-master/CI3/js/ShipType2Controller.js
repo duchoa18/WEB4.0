@@ -6,10 +6,10 @@ class ShipType2Controller extends ShipController {
     configs.hitBoxRadius = 15;
     configs.hitBoxOffset =  new Phaser.Point(25,20);
     super(x,y,spriteName,configs);
-    this.sprite.anchor = new Phaser.Point(0.5,0);
   }
 
   fire(){
-    new BulletType2Controller(this.sprite.position,"BulletType2.png",new Phaser.Point(0,-10),{power : 20});
+    new BulletType2Controller(this.sprite.position, new Phaser.Point(1, -10),{ power : 20 });
+    new BulletType2Controller(this.sprite.position, new Phaser.Point(-1, -10),{ power : 20 });
   }
 }

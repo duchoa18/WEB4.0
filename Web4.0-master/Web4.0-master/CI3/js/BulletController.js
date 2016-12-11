@@ -10,22 +10,29 @@ class BulletController {
     );
     this.sprite.anchor = new Phaser.Point(0.5 , 0.5);
     this.sprite.power = this.configs.power;
+
     this.sprite.checkWorldBounds = true ;//kiem tra dan ra khoi man hinh chuaw
     this.sprite.outofBoundsKill = true ;//xoa dan neu ra khoi man hinh
+
     this.sprite.body.velocity = direction.setMagnitude(Nakama.configs.BULLET_SPEED);
     this.sprite.angle = Math.atan2(direction.x,-direction.y) * (180/Math.PI);
-    //this.sprite.events.onKilled.add(this.explode,this);
-  }
 
-  update (){
+    this.sprite.onHitTarget = function(){
 
-  }
-/*
-  explode(){
-    var index = Nakama.bulletList.indexOf(this);
-    if (index > -1){
-      Nakama.bulletList.splice(index,1);
     }
+    
+    this.sprite.events.onKilled.add(this.explode,this);
+
+    this.sprite.onHitTarget = function(){
+      this.kill();
+    }
+
+    Nakama.bulletControllers.push(this);
   }
-  */
+
+  explode(){
+    Nakama.bulletControllers.splice(Nakama.bulletControllers.indexOf(this),1);
+    this.sprite.destroy();
+  }
+
 }
