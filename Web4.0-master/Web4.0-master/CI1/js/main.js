@@ -1,103 +1,74 @@
 var Nakama = {};
-Nakama.configs = {
-  SHIP_SPEED : 450
-};
+Nakama.Configs = {
+}
 
 window.onload = function(){
-  Nakama.game = new Phaser.Game(
-    640,
-    960,
-    Phaser.Auto,
-    '',
-    {
+  Nakama.game = new Phaser.Game(1008, 720, Phaser.AUTO, '',{
       preload: preload,
       create: create,
       update: update,
       render: render
-    },
-    false,
-    false
+    }, false, false
   );
 }
 
 var preload = function(){
-    Nakama.game.scale.minWidth = 320;
-    Nakama.game.scale.minHeight = 480;
-    Nakama.game.scale.maxWidth = 640;
-    Nakama.game.scale.maxHeight = 960;
-    Nakama.game.scale.pageAlignHorizontally = true;
-    Nakama.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    Nakama.game.load.atlasJSONHash('assets', 'Assets/assets.png', 'Assets/assets.json');
-    Nakama.game.load.image('background', 'Assets/Map1.png');
-    Nakama.game.time.advancedTiming = true;
+  Nakama.game.scale.minWidth = 504;
+  Nakama.game.scale.minHeight = 360;
+  Nakama.game.scale.maxWidth = 1080;
+  Nakama.game.scale.maxHeight = 720;
+  Nakama.game.scale.pageAlignHorizontally = true;
+  Nakama.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
+  // Nakama.game.load.atlasJSONHash('assets', 'Assets/assets.png', 'Assets/assets.json');
+  Nakama.game.load.image('background', 'Assets/background.jpg');
+  Nakama.game.load.image('wall', 'Assets/wall.png');
+  Nakama.game.load.image('diamond', 'Assets/diamond.png');
+  Nakama.game.load.image('stone', 'Assets/stone.png');
+  Nakama.game.time.advancedTiming = true;
 }
 
+
 var create = function(){
-    Nakama.game.physics.startSystem(Phaser.Physics.ARCADE);
-    Nakama.keyboard = Nakama.game.input.keyboard;
+  Nakama.game.physics.startSystem(Phaser.Physics.ARCADE);
+  Nakama.keyboard = Nakama.game.input.keyboard;
 
-    Nakama.ship = Nakama.game.add.sprite(
-      200,
-      400,
-      'assets',
-      "Spaceship3-Player.png"
-    );
+  Nakama.game.add.sprite(0, 0, "background");
 
-    Nakama.ship2 = Nakama.game.add.sprite(
-      200,
-      400,
-      'assets',
-      "Spaceship1-Partner.png"
-    );
+  Nakama.platforms = Nakama.game.add.group();
+  Nakama.platforms.enableBody = true;
+  Nakama.players = [];
 
-    Nakama.game.physics.enable(Nakama.ship,Phaser.Physics.ARCADE);
-    Nakama.game.physics.enable(Nakama.ship2,Phaser.Physics.ARCADE);
+  var map1 = new Map();
+
+  player1 = Nakama.game.add.sprite(48,48, "diamond");
+  Nakama.game.physics.arcade.enable(player1);
+  player1.body.setCircle(16, 0, 0);
 }
 
 var update = function(){
-    if (Nakama.keyboard.isDown(Phaser.Keyboard.W)){
-      Nakama.ship.body.velocity.y = -Nakama.configs.SHIP_SPEED;
-    }
-    else if (Nakama.keyboard.isDown(Phaser.Keyboard.S)) {
-      Nakama.ship.body.velocity.y = Nakama.configs.SHIP_SPEED;
-    }
-    else{
-      Nakama.ship.body.velocity.y = 0;
-    }
-
-    if (Nakama.keyboard.isDown(Phaser.Keyboard.A)){
-      Nakama.ship.body.velocity.x = -Nakama.configs.SHIP_SPEED;
-    }
-    else if (Nakama.keyboard.isDown(Phaser.Keyboard.D)) {
-      Nakama.ship.body.velocity.x = Nakama.configs.SHIP_SPEED;
-    }
-    else{
-      Nakama.ship.body.velocity.x = 0;
-    }
-
-
-    if (Nakama.keyboard.isDown(Phaser.Keyboard.UP)){
-      Nakama.ship2.body.velocity.y = -Nakama.configs.SHIP_SPEED;
-    }
-    else if (Nakama.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-      Nakama.ship2.body.velocity.y = Nakama.configs.SHIP_SPEED;
-    }
-    else{
-      Nakama.ship2.body.velocity.y = 0;
-    }
-
-    if (Nakama.keyboard.isDown(Phaser.Keyboard.LEFT)){
-      Nakama.ship2.body.velocity.x = -Nakama.configs.SHIP_SPEED;
-    }
-    else if (Nakama.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-      Nakama.ship2.body.velocity.x = Nakama.configs.SHIP_SPEED;
-    }
-    else{
-      Nakama.ship2.body.velocity.x = 0;
-    }
+  Nakama.game.physics.arcade.collide(player1, Nakama.platforms);
+  if(Nakama.keyboard.isDown(Phaser.Keyboard.UP)){
+    player1.body.velocity.y = -200;
+  }
+  else if(Nakama.keyboard.isDown(Phaser.Keyboard.DOWN)){
+    player1.body.velocity.y = 200;
+  }
+  else{
+    player1.body.velocity.y = 0;
+  }
+  if(Nakama.keyboard.isDown(Phaser.Keyboard.LEFT)){
+    player1.body.velocity.x = -200;
+  }
+  else if(Nakama.keyboard.isDown(Phaser.Keyboard.RIGHT)){
+    player1.body.velocity.x = 200;
+  }
+  else{
+    player1.body.velocity.x = 0;
+  }
 
 }
 
 var render = function(){
-
+  // Nakama.game.debug.body(player1)
 }

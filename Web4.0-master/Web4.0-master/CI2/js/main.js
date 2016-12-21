@@ -1,98 +1,93 @@
 var Nakama = {};
-Nakama.configs = {
-  SHIP_SPEED : 450,
-  BULLET_SPEED : 1200,
-  DAMAGE : 10,
-};
+Nakama.Configs = {
+    BULLET_SPEED : 200
+}
 
 window.onload = function(){
-  Nakama.game = new Phaser.Game(
-    640,
-    960,
-    Phaser.Auto,
-    '',
-    {
+  Nakama.game = new Phaser.Game(1008, 720, Phaser.AUTO, '',{
       preload: preload,
       create: create,
       update: update,
       render: render
-    },
-    false,
-    false
+    }, false, false
   );
 }
 
 var preload = function(){
-    Nakama.game.scale.minWidth = 320;
-    Nakama.game.scale.minHeight = 480;
-    Nakama.game.scale.maxWidth = 640;
-    Nakama.game.scale.maxHeight = 960;
-    Nakama.game.scale.pageAlignHorizontally = true;
-    Nakama.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    Nakama.game.load.atlasJSONHash('assets', 'Assets/assets.png', 'Assets/assets.json');
-    Nakama.game.load.image('background', 'Assets/Map1.png');
-    Nakama.game.time.advancedTiming = true;
+  Nakama.game.scale.minWidth = 504;
+  Nakama.game.scale.minHeight = 360;
+  Nakama.game.scale.maxWidth = 1008;
+  Nakama.game.scale.maxHeight = 720;
+  Nakama.game.scale.pageAlignHorizontally = true;
+  Nakama.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
+  // Nakama.game.load.atlasJSONHash('assets', 'Assets/assets.png', 'Assets/assets.json');
+  Nakama.game.load.image('background', 'Assets/background.jpg');
+  Nakama.game.load.image('wall', 'Assets/wall.png');
+  Nakama.game.load.atlasJSONHash('assets', 'Assets/assets.png', 'Assets/assets.json');
+  Nakama.game.load.spritesheet('player', 'Assets/george.png', 48, 48);
+  Nakama.game.load.image('stone', 'Assets/stone.png');
+  Nakama.game.time.advancedTiming = true;
+  Nakama.game.load.image('bomb', 'Assets/bomb.png');
 }
+
 
 var create = function(){
+  Nakama.game.physics.startSystem(Phaser.Physics.ARCADE);
+  Nakama.keyboard = Nakama.game.input.keyboard;
 
-    Nakama.game.physics.startSystem(Phaser.Physics.ARCADE);
-    Nakama.keyboard = Nakama.game.input.keyboard;
-    Nakama.background = Nakama.game.add.tileSprite(0, 0, 640, 960, 'background');
-    Nakama.shipControllers = [];
+  Nakama.game.add.sprite(0, 0, "background");
 
-    Nakama.playerGroup = Nakama.game.add.physicsGroup();
-    Nakama.bulletGroup = Nakama.game.add.physicsGroup();
-    Nakama.enemyGroup = Nakama.game.add.physicsGroup();
+  Nakama.platforms = Nakama.game.add.group();
+  Nakama.platforms.enableBody = true;
+  Nakama.bombGroup = Nakama.game.add.physicsGroup();
+  Nakama.bulletGroup = Nakama.game.add.physicsGroup();
+  Nakama.playerGroup = Nakama.game.add.physicsGroup();
+  Nakama.players = [];
+  Nakama.bombs = [];
 
-    Nakama.enemies = [];
+  var map1 = new Map();
 
-    var player1 = new ShipController(200,700, "Spaceship1-Player.png",{
-      up : Phaser.Keyboard.UP,
-      down : Phaser.Keyboard.DOWN,
-      left : Phaser.Keyboard.LEFT,
-      right : Phaser.Keyboard.RIGHT,
-      fire : Phaser.Keyboard.SPACEBAR,
-      cooldown : 0.3
-    });
-    Nakama.shipControllers.push(player1);
-
-    var player2 = new ShipController(400,700, "Spaceship2-Partner.png",{
-      up : Phaser.Keyboard.W,
-      down : Phaser.Keyboard.S,
-      left : Phaser.Keyboard.A,
-      right : Phaser.Keyboard.D,
-      fire : Phaser.Keyboard.ENTER,
-      cooldown : 0.3
-    });
-    Nakama.shipControllers.push(player2);
-
-  var enemy = new EnemyController(220,400,"EnemyType1.png");
-  Nakama.enemies.push(enemy);
-  var enemy1 = new EnemyController(400,400,"EnemyType2.png");
-  Nakama.enemies.push(enemy1);
-  var enemy2 = new EnemyController(110,200,"EnemyType3.png");
-  Nakama.enemies.push(enemy2);
-  var enemy3 = new EnemyController(530,200,"EnemyType3.png");
-  Nakama.enemies.push(enemy3);
+  player1 = new Player(48, 48, {
+    up   : Phaser.Keyboard.UP,
+    down : Phaser.Keyboard.DOWN,
+    left : Phaser.Keyboard.LEFT,
+    right: Phaser.Keyboard.RIGHT,
+    fire : Phaser.Keyboard.SPACEBAR,
+  });
+  Nakama.players.push(player1);
 
 }
-
 var update = function(){
-    Nakama.background.tilePosition.y += 2;
+  Nakama.game.physics.arcade.collide(Nakama.playerGroup, Nakama.platforms);
+  Nakama.game.physics.arcade.collide(Nakama.playerGroup, Nakama.bombGroup);
+  for (var i = 0; i<Nakama.players.length; i++){
+    Nakama.players[i].update();
+  }
+  for (var i = 0; i<Nakama.bombs.length; i++){
+    Nakama.bombs[i].update();
+  }
+  Nakama.game.physics.arcade.overlap(Nakama.bulletGroup, Nakama.platforms, onBulletHitActor);
+  Nakama.game.physics.arcade.overlap(Nakama.bulletGroup, Nakama.playerGroup, onBulletHitActor);
+}
 
-    for (var i=0 ; i< Nakama.shipControllers.length ;i++){
-      Nakama.shipControllers[i].update();
-    }
-    Nakama.game.physics.arcade.overlap(Nakama.bulletGroup,Nakama.enemyGroup,onBulletHitActor);
+function onBulletHitActor(bulletSprite, actorSprite){
+  actorSprite.damage(bulletSprite.power);
+  bulletSprite.kill();
 }
 
 var render = function(){
+  // Nakama.playerGroup.forEachAlive(function(sprite){
+  //   Nakama.game.debug.body(sprite);
+  // });
+  // Nakama.bombGroup.forEachAlive(function(sprite){
+  //   Nakama.game.debug.body(sprite);
+  // });
+  // Nakama.bulletGroup.forEachAlive(function(sprite){
+  //   Nakama.game.debug.body(sprite);
+  // });
+  // Nakama.platforms.forEachAlive(function(sprite){
+  //   Nakama.game.debug.body(sprite);
+  // });
 
 }
-
-function onBulletHitActor(bulletSprite,actorSprite){
-  actorSprite.damage(Nakama.configs.DAMAGE);
-  bulletSprite.kill();
-}
-//BTVN  dan thanh class , dich thanh class .CI2
