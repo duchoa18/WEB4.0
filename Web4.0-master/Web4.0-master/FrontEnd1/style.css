@@ -1,0 +1,49 @@
+p {
+  color : red;
+  font-size : 30px;
+}
+
+h2 {
+  color : red;
+  font-size : 40px;
+  background-color: yellow;
+}
+
+.small_title {
+  text-decoration: underline;
+  border-top: 3px solid black;
+}
+
+.secondary_title {
+  font-style: italic;
+}
+
+.small_title.secondary_title {
+  border: 3px solid white;
+}
+
+.small_title .secondary_title{//con nam trong cha(tu ben phai sang)
+  text-decoration: line-through;
+}
+
+.secondary_title>.small_title {//con truc tiep chiu anh huong
+  color: #ffffff;
+}
+
+.small_title:hover{ //tac dong khi dua chuot len
+  background : yellow;
+}
+
+a:active {
+  color: green;
+}
+
+input [type="text"] {
+  font-size: 50px;
+}
+
+element.style {
+  border-radius: 100%;
+  display : block ; // chiem ca hang ngang,co hinh dang cu the nen co the thay doi width height ;
+  display: inline ; // trong 1 dong nen khong the chinh sua width height ;
+}
