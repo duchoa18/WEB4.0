@@ -1,0 +1,10 @@
+img {
+  width: 550px;
+  height: 650px;
+  float : left ;
+  position: fixed ;
+}
+
+p{
+  float:left;
+}

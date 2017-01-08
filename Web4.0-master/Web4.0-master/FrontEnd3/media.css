@@ -1,0 +1,16 @@
+.big_text_block {
+  background: blue ;
+  font-size: 36px;
+}
+@media (min-width : 780 px){
+  .big_text_block {
+    background-color: red ;
+  font-size: 38px;
+  }
+}
+
+@media print {
+  .big_text_block {
+    text-decoration: underline;
+  }
+}
